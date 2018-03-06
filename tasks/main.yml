@@ -1,0 +1,56 @@
+---
+# tasks file for ansible-homegw-logstash-netflow
+- name: setup java8
+  become: True
+  apt_repository:
+    repo: 'ppa:webupd8team/java'
+  register: result
+  
+- name: accept java8 license
+  become: True
+  debconf:
+    name: 'oracle-java8-installer'
+    question: 'shared/accepted-oracle-license-v1-1'
+    value: "{{ logstash_accept_oracle_license_v1_1 }}"
+    vtype: 'select'
+  register: result
+  
+- name: install packages
+  become: True
+  apt: pkg={{ item }} update_cache=yes cache_valid_time=0
+  with_items:
+    - oracle-java8-installer
+  register: result
+  
+- name: copy logstash deb package
+  become: True
+  copy:
+    src: "{{ logstash_deb_srcpath }}"
+    dest: "{{ logstash_deb_destpath }}"
+    owner: "{{ logstash_deb_fileperm.owner }}"
+    group: "{{ logstash_deb_fileperm.group }}"
+    mode:  "{{ logstash_deb_fileperm.mode }}"
+  register: result
+
+- name: apt-install
+  become: True
+  apt:
+    deb: "{{ logstash_deb_destpath }}"
+  register: result
+
+- name: setup configuration file
+  become: True
+  template:
+    src: files/netflow.conf.j2
+    dest: "{{ logstash_conf_netflow_filepath }}"
+    owner: "{{ logstash_conf_netflow_fileperm.owner }}"
+    group: "{{ logstash_conf_netflow_fileperm.group }}"
+    mode:  "{{ logstash_conf_netflow_fileperm.mode }}"
+  register: result
+
+- name: register logstash.service to systemd
+  systemd:
+    name: logstash
+    enabled: True
+    state: started
+    

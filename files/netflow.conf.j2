@@ -1,0 +1,16 @@
+input {
+  udp {
+    host => "127.0.0.1"
+    port => 2056
+    codec => netflow
+  }
+}
+output {
+  stdout {
+    codec => rubydebug
+  }
+  elasticsearch {
+    index => "logstash-netlow-{{ logstash_hostname }}-%{+YYYY.MM.dd}"
+    hosts => [ "http://{{ logstash_conf_netflow_dest_ip }}:{{ logstash_conf_netflow_dest_port }}/" ]
+  }
+}

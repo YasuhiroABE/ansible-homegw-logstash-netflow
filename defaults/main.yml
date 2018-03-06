@@ -1,0 +1,33 @@
+---
+# defaults file for ansible-homegw-logstash-netflow
+
+## hostname of logstash running node
+logstash_hostname: localhost
+
+## If you accept the oracle java license, please turn it to "true".
+logstash_accept_oracle_license_v1_1: "false"
+
+## local file path of the logstash deb package
+## Please download the debpackage from the following location.
+## https://www.elastic.co/jp/downloads/logstash
+logstash_deb_srcpath: files/logstash-6.0.0.deb
+
+## the destination path of the logstash deb package
+logstash_deb_destpath: /tmp/logstash.deb
+logstash_deb_fileperm:
+  owner: root
+  group: root
+  mode: '0644'
+
+## netflow configuration filepath on the remote system
+logstash_conf_netflow_filepath: /etc/logstash/conf.d/netflow.conf
+logstash_conf_netflow_fileperm:
+  owner: root
+  group: root
+  mode: '0644'
+
+## destination ip address of the elasticsearch host
+logstash_conf_netflow_dest_ip: 192.168.0.1
+
+## destination port number of the elasticsearch host
+logstash_conf_netflow_dest_port: 9200
